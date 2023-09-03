@@ -26,29 +26,22 @@ func _physics_process(delta):
 		dig_timer -= delta
 		if dig_timer <= 0:
 			dig_timer = DIG_PERIOD
-			# DIG METHOD B: get the floor collided
-			var floor_collided = get_last_slide_collision()
-			if floor_collided != null:
-				print("DIG OBJECT: ", floor_collided.get_collider())
+			# Go a raycast diagonally to attempt a dig in front of the character
+			var space_state = get_world_2d().direct_space_state
+			var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + DIG_OFFSET)
+			raycast_query.exclude = [self]
+			var raycast_result = space_state.intersect_ray(raycast_query)
+			# TODO don't just delete everything!
+			if not raycast_result.is_empty():
+				print("DIG OBJECT: ", raycast_result.collider)
 				#floor_collided.get_collider().queue_free()
-				var tilemap_collided = floor_collided.get_collider() as TileMap
+				var tilemap_collided = raycast_result.collider as TileMap
 				if tilemap_collided != null:
 					var hack_dig_pos = global_position
 					hack_dig_pos.y += 32
 					var hit_local_pos = tilemap_collided.to_local(hack_dig_pos)
 					var hit_local_coords = tilemap_collided.local_to_map(hit_local_pos)
 					tilemap_collided.erase_cell(DIG_LAYER_INDEX, hit_local_coords)
-			
-			# DIG METHOD A: do a raycast diagonally to dig ijn front
-			
-			# TODO why does raycast not give any result ever?
-			#var space_state = get_world_2d().direct_space_state
-			#var raycast_query = PhysicsRayQueryParameters2D.create(global_position, DIG_OFFSET)
-			#raycast_query.exclude = [self]
-			#var raycast_result = space_state.intersect_ray(raycast_query)
-			# TODO don't just delete everything!
-			#if not raycast_result.is_empty():
-			#	raycast_result.collider.queue_free()
 
 	var direction = Input.get_axis("move_left", "move_right")
 	if direction:
