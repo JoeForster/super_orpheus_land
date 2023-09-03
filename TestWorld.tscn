@@ -1,0 +1,250 @@
+[gd_scene load_steps=40 format=3 uid="uid://b7rqlb0ew5vhy"]
+
+[ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://bedrock.png" id="1_pq6fr"]
+[ext_resource type="Script" path="res://Player.gd" id="2_s8vh4"]
+[ext_resource type="Texture2D" uid="uid://dfl31qfmfvbnx" path="res://assets/character/player/dead/dead-a.png" id="3_54pe0"]
+[ext_resource type="Texture2D" uid="uid://ts27j7wpsuog" path="res://assets/character/player/fall.png" id="4_yijyh"]
+[ext_resource type="Texture2D" uid="uid://clply76o1mw8g" path="res://assets/character/player/idle/idle1.png" id="5_rno4n"]
+[ext_resource type="Texture2D" uid="uid://lrwmxny8l7ai" path="res://assets/character/player/idle/idle2.png" id="6_dviap"]
+[ext_resource type="Texture2D" uid="uid://dlph4bxhkowlh" path="res://assets/character/player/idle/idle3.png" id="7_qdlfk"]
+[ext_resource type="Texture2D" uid="uid://bkbqdbumc81hs" path="res://assets/character/player/lava/lava0.png" id="8_50fhf"]
+[ext_resource type="Texture2D" uid="uid://b4qshvw1cxfj4" path="res://assets/character/player/lava/lava1.png" id="9_bg40m"]
+[ext_resource type="Texture2D" uid="uid://dw0rdvkfqsbke" path="res://assets/character/player/lava/lava2.png" id="10_d1wgg"]
+[ext_resource type="Texture2D" uid="uid://hcvjwp4bv0op" path="res://assets/character/player/lava/lava3.png" id="11_03u5m"]
+[ext_resource type="Texture2D" uid="uid://f6tl1hwstcoa" path="res://assets/character/player/lava/lava4.png" id="12_g4ju8"]
+[ext_resource type="Texture2D" uid="uid://c3jg672ldplbp" path="res://assets/character/player/lava/lava5.png" id="13_xheec"]
+[ext_resource type="Texture2D" uid="uid://b2x11ovsps3lg" path="res://assets/character/player/lava/lava6.png" id="14_b3224"]
+[ext_resource type="Texture2D" uid="uid://i5vxdalam35g" path="res://assets/character/player/lava/lava7.png" id="15_85hk8"]
+[ext_resource type="Texture2D" uid="uid://vxtmp7p04bjx" path="res://assets/character/player/lava/lava8.png" id="16_haqy4"]
+[ext_resource type="Texture2D" uid="uid://crla22qeymqpb" path="res://assets/character/player/lava/lava9.png" id="17_2a44d"]
+[ext_resource type="Texture2D" uid="uid://bcogwaotmq1fe" path="res://assets/character/player/lava/lava10.png" id="18_6klr6"]
+[ext_resource type="Texture2D" uid="uid://byecxqrdb4ysk" path="res://assets/character/player/lava/lava11.png" id="19_jwbpe"]
+[ext_resource type="Texture2D" uid="uid://ca5qd4aj8mvqy" path="res://assets/character/player/lava/lava12.png" id="20_othft"]
+[ext_resource type="Texture2D" uid="uid://bd0kvjucjqiiq" path="res://assets/character/player/lava/lava13.png" id="21_c47h2"]
+[ext_resource type="Texture2D" uid="uid://f3cf7uyvdqpx" path="res://assets/character/player/lava/lava14.png" id="22_48gh5"]
+[ext_resource type="Texture2D" uid="uid://bmpvhkmelwcm7" path="res://assets/character/player/lava/lava15.png" id="23_tkg2l"]
+[ext_resource type="Texture2D" uid="uid://crjsh61jxj4v3" path="res://assets/character/player/lava/lava16.png" id="24_6nxji"]
+[ext_resource type="Texture2D" uid="uid://cfrxrlg12wvjj" path="res://assets/character/player/run/run1.png" id="25_2e4ux"]
+[ext_resource type="Texture2D" uid="uid://cfh4mflf1a476" path="res://assets/character/player/run/run2.png" id="26_iafcc"]
+[ext_resource type="Texture2D" uid="uid://b1hip5xqh8hhx" path="res://assets/character/player/run/run3.png" id="27_hkt7b"]
+[ext_resource type="Texture2D" uid="uid://ch8a83fqvo8w4" path="res://assets/character/player/run/run4.png" id="28_wsvef"]
+[ext_resource type="Texture2D" uid="uid://djtq56e0lk08f" path="res://assets/character/player/run/run5.png" id="29_kkvkw"]
+[ext_resource type="Texture2D" uid="uid://buras284tgfrb" path="res://assets/character/player/run/run6.png" id="30_1qnn3"]
+[ext_resource type="Texture2D" uid="uid://i6s24uxf1jat" path="res://assets/character/player/wall/wall1.png" id="31_5k3h3"]
+[ext_resource type="Texture2D" uid="uid://6n45tvbi5pyn" path="res://assets/character/player/wall/wall2.png" id="32_eryh7"]
+[ext_resource type="Texture2D" uid="uid://csfu2ac0ixfo0" path="res://assets/tiles/earth_tiles.png" id="33_0fcu0"]
+[ext_resource type="Texture2D" uid="uid://dxu7kbyvyuwdo" path="res://assets/character/player/wall/wall3.png" id="33_rt4f7"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vwpxq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_54pe0")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_yijyh")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_rno4n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dviap")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_qdlfk")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_50fhf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_bg40m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_d1wgg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_03u5m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_g4ju8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_xheec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_b3224")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_85hk8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_haqy4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_2a44d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_6klr6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_jwbpe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_othft")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_c47h2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_48gh5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_tkg2l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_6nxji")
+}],
+"loop": true,
+"name": &"lava",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("25_2e4ux")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_iafcc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_hkt7b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_wsvef")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_kkvkw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_1qnn3")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("31_5k3h3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_eryh7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_rt4f7")
+}],
+"loop": true,
+"name": &"wall",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ckq11"]
+size = Vector2(9, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5270b"]
+texture = ExtResource("33_0fcu0")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:0/0 = 0
+1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:0/0/physics_layer_0/angular_velocity = 0.0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:0/0 = 0
+2:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:0/0/physics_layer_0/angular_velocity = 0.0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSet" id="TileSet_y6eax"]
+tile_size = Vector2i(32, 32)
+occlusion_layer_0/light_mask = 1
+physics_layer_0/collision_layer = 1
+navigation_layer_0/layers = 1
+sources/1 = SubResource("TileSetAtlasSource_5270b")
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_aenl4"]
+
+[node name="WorldRoot" type="Node"]
+
+[node name="LandBlock" type="StaticBody2D" parent="."]
+position = Vector2(312, 202)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="LandBlock"]
+position = Vector2(2686, 219)
+polygon = PackedVector2Array(-3, -1, -211, 168, -279, 361, -816, 1039, -208, 1170, 397, 1303, 1425, 1296, 1956, 1220, 1936, 868, 1188, 419, 616, 153, 333, 36, 84, -14)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(228, 117)
+script = ExtResource("2_s8vh4")
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_vwpxq")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_ckq11")
+
+[node name="TileMap" type="TileMap" parent="."]
+position = Vector2(234, 296)
+tile_set = SubResource("TileSet_y6eax")
+cell_quadrant_size = 32
+collision_visibility_mode = 1
+format = 2
+layer_0/name = "foreground"
+layer_0/tile_data = PackedInt32Array(-65536, 1, 0, -7, 1, 0, -6, 1, 0, -5, 1, 0, -4, 1, 0, -3, 1, 0, -2, 1, 0, -1, 1, 0, -65535, 1, 0, -65534, 1, 0, -65533, 1, 0, -65532, 1, 0, -65531, 1, 0, -65530, 1, 0, -65529, 1, 0, -65528, 1, 0, -65527, 1, 0, -65526, 1, 0, -65525, 1, 0, -65524, 1, 0, -65523, 1, 0, -65522, 1, 0, -65521, 1, 0, -65520, 1, 0, -65519, 1, 0, -65518, 1, 0, -65517, 1, 0, -65516, 1, 0, -65515, 1, 0, -65514, 1, 0, -65513, 1, 0, -65512, 1, 0, -65511, 1, 0, -65510, 1, 0, -65509, 1, 0, -65508, 1, 0, -8, 1, 0, -65507, 1, 0, 65528, 1, 0, 131064, 1, 0, 196600, 1, 0, 262136, 1, 0, 327672, 1, 0, 393208, 1, 0, 458744, 1, 0, 65529, 1, 0, 131065, 1, 0, 196601, 1, 0, 262137, 1, 0, 327673, 1, 0, 393209, 1, 0, 458745, 1, 0, 29, 1, 0, 65565, 1, 0, 131101, 1, 0, 196637, 1, 0, 262173, 1, 0, 327709, 1, 0, 393245, 1, 0, 393244, 1, 0, 327708, 1, 0, 262172, 1, 0, 196636, 1, 0, 131100, 1, 0, 65564, 1, 0, 28, 1, 0, 262138, 65537, 0, 262139, 65537, 0, 262140, 65537, 0, 262141, 65537, 0, 262142, 65537, 0, 262143, 65537, 0, 196608, 65537, 0, 196609, 65537, 0, 196610, 65537, 0, 196611, 65537, 0, 196612, 65537, 0, 196613, 65537, 0, 196614, 65537, 0, 196615, 65537, 0, 196616, 65537, 0, 196617, 65537, 0, 196618, 65537, 0, 196619, 65537, 0, 196620, 65537, 0, 196621, 65537, 0, 196622, 65537, 0, 196623, 65537, 0, 196624, 65537, 0, 196625, 65537, 0, 196626, 65537, 0, 196627, 65537, 0, 196628, 65537, 0, 196629, 65537, 0, 196630, 65537, 0, 196631, 65537, 0, 196632, 65537, 0, 196633, 65537, 0, 196634, 65537, 0, 196635, 65537, 0, 327674, 65537, 0, 327675, 65537, 0, 327676, 65537, 0, 327677, 65537, 0, 327678, 65537, 0, 327679, 65537, 0, 262144, 65537, 0, 262145, 65537, 0, 262146, 65537, 0, 262147, 65537, 0, 262148, 65537, 0, 262149, 65537, 0, 262150, 65537, 0, 262151, 65537, 0, 262152, 65537, 0, 262153, 65537, 0, 262154, 65537, 0, 262155, 65537, 0, 262156, 65537, 0, 262157, 65537, 0, 262158, 65537, 0, 262159, 65537, 0, 262160, 65537, 0, 262161, 65537, 0, 262162, 65537, 0, 262163, 65537, 0, 262164, 65537, 0, 262165, 65537, 0, 262166, 65537, 0, 262167, 65537, 0, 262168, 65537, 0, 262169, 65537, 0, 262170, 65537, 0, 262171, 65537, 0)
+layer_1/name = "background"
+layer_1/enabled = true
+layer_1/modulate = Color(1, 1, 1, 1)
+layer_1/y_sort_enabled = false
+layer_1/y_sort_origin = 0
+layer_1/z_index = 0
+layer_1/tile_data = PackedInt32Array()
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+position = Vector2(182, 194)
+
+[node name="Bedrock" type="StaticBody2D" parent="ParallaxBackground/ParallaxLayer"]
+position = Vector2(-178, 329)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParallaxBackground/ParallaxLayer/Bedrock"]
+shape = SubResource("WorldBoundaryShape2D_aenl4")
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer/Bedrock"]
+texture_repeat = 2
+position = Vector2(-582, 0)
+scale = Vector2(1.795, 1.6275)
+texture = ExtResource("1_pq6fr")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1500, 600)
