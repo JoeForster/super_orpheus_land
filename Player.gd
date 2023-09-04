@@ -3,14 +3,28 @@ extends CharacterBody2D
 
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
-const DIG_PERIOD = 1.0
+const DIG_PERIOD = 0.1
 const DIG_OFFSET = Vector2(32, 32)
-const DIG_LAYER_INDEX = 0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 var dig_timer = DIG_PERIOD
+
+func _update_dig(delta):
+	dig_timer -= delta
+	if dig_timer <= 0:
+		dig_timer = DIG_PERIOD
+		# Go a raycast diagonally to attempt a dig in front of the character
+		var space_state = get_world_2d().direct_space_state
+		var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + DIG_OFFSET)
+		raycast_query.exclude = [self]
+		var raycast_result = space_state.intersect_ray(raycast_query)
+		if not raycast_result.is_empty():
+			var tilemap_collided = raycast_result.collider as TileMap
+			if tilemap_collided != null:
+				var dig_global_pos = raycast_result.position
+				tilemap_collided.dig(dig_global_pos)
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -23,25 +37,7 @@ func _physics_process(delta):
 
 	# Handle dig.
 	if Input.is_action_pressed("dig"):
-		dig_timer -= delta
-		if dig_timer <= 0:
-			dig_timer = DIG_PERIOD
-			# Go a raycast diagonally to attempt a dig in front of the character
-			var space_state = get_world_2d().direct_space_state
-			var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + DIG_OFFSET)
-			raycast_query.exclude = [self]
-			var raycast_result = space_state.intersect_ray(raycast_query)
-			# TODO don't just delete everything!
-			if not raycast_result.is_empty():
-				print("DIG OBJECT: ", raycast_result.collider)
-				#floor_collided.get_collider().queue_free()
-				var tilemap_collided = raycast_result.collider as TileMap
-				if tilemap_collided != null:
-					var hack_dig_pos = global_position
-					hack_dig_pos.y += 32
-					var hit_local_pos = tilemap_collided.to_local(hack_dig_pos)
-					var hit_local_coords = tilemap_collided.local_to_map(hit_local_pos)
-					tilemap_collided.erase_cell(DIG_LAYER_INDEX, hit_local_coords)
+		_update_dig(delta)
 
 	var direction = Input.get_axis("move_left", "move_right")
 	if direction:

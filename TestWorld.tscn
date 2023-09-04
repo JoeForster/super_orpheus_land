@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://b7rqlb0ew5vhy"]
+[gd_scene load_steps=41 format=3 uid="uid://b7rqlb0ew5vhy"]
 
 [ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://bedrock.png" id="1_pq6fr"]
 [ext_resource type="Script" path="res://Player.gd" id="2_s8vh4"]
@@ -34,6 +34,7 @@
 [ext_resource type="Texture2D" uid="uid://6n45tvbi5pyn" path="res://assets/character/player/wall/wall2.png" id="32_eryh7"]
 [ext_resource type="Texture2D" uid="uid://csfu2ac0ixfo0" path="res://assets/tiles/earth_tiles.png" id="33_0fcu0"]
 [ext_resource type="Texture2D" uid="uid://dxu7kbyvyuwdo" path="res://assets/character/player/wall/wall3.png" id="33_rt4f7"]
+[ext_resource type="Script" path="res://LandTiles.gd" id="34_c752n"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vwpxq"]
 animations = [{
@@ -171,20 +172,25 @@ texture_region_size = Vector2i(32, 32)
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+0:0/0/custom_data_0 = 5
 1:0/0 = 0
 1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 1:0/0/physics_layer_0/angular_velocity = 0.0
 1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:0/0/custom_data_0 = 10
 2:0/0 = 0
 2:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 2:0/0/physics_layer_0/angular_velocity = 0.0
 2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:0/0/custom_data_0 = 20
 
 [sub_resource type="TileSet" id="TileSet_y6eax"]
 tile_size = Vector2i(32, 32)
 occlusion_layer_0/light_mask = 1
 physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
+custom_data_layer_0/name = "hitpoints"
+custom_data_layer_0/type = 2
 sources/1 = SubResource("TileSetAtlasSource_5270b")
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_aenl4"]
@@ -212,7 +218,7 @@ animation = &"idle"
 position = Vector2(0.5, 0)
 shape = SubResource("RectangleShape2D_ckq11")
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="LandTiles" type="TileMap" parent="."]
 position = Vector2(234, 296)
 tile_set = SubResource("TileSet_y6eax")
 cell_quadrant_size = 32
@@ -227,6 +233,7 @@ layer_1/y_sort_enabled = false
 layer_1/y_sort_origin = 0
 layer_1/z_index = 0
 layer_1/tile_data = PackedInt32Array()
+script = ExtResource("34_c752n")
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
