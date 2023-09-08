@@ -1,15 +1,19 @@
 extends CharacterBody2D
 
-
+const MAX_HP = 100
+const INITIAL_HP = MAX_HP
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
 const DIG_PERIOD = 0.1
 const DIG_OFFSET = Vector2(32, 32)
 
+@export var hitpoints = INITIAL_HP
+@export var hp_bar : TextureProgressBar
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-
 var dig_timer = DIG_PERIOD
+
 
 func _update_dig(delta):
 	dig_timer -= delta
@@ -41,12 +45,34 @@ func _physics_process(delta):
 
 	var direction = Input.get_axis("move_left", "move_right")
 	if direction:
+		#print("left/right input: ", direction)
 		velocity.x = direction * SPEED
 	else:
+		#print("left/right input: 0")
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
 	move_and_slide()
 
 func _process(delta):
+
+	# Animation logic update
+	if hitpoints <= 0:
+		$AnimatedSprite2D.play("dead")
+	elif is_on_floor():
+		if velocity.x != 0:
+			$AnimatedSprite2D.play("run")
+		else:
+			$AnimatedSprite2D.play("idle")
+	else:
+		if velocity.y > 0:
+			$AnimatedSprite2D.play("jump")
+		else:
+			$AnimatedSprite2D.play("fall")
+
+	# Sprite visual update
 	if velocity.x != 0:
 		$AnimatedSprite2D.set_flip_h(velocity.x < 0)
+
+	# HUD update
+	if hp_bar != null:
+		hp_bar.set_value_no_signal(hitpoints);
