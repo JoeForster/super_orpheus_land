@@ -60,6 +60,16 @@ func _physics_process(delta):
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 
 	move_and_slide()
+	
+	if is_on_floor():
+		var floor_collision : KinematicCollision2D = get_last_slide_collision()
+		if floor_collision != null:
+			var tilemap_collided = floor_collision.get_collider() as TileMap
+			if tilemap_collided != null:
+				var hit_global_pos = floor_collision.get_position()
+				var damage_taken = tilemap_collided.get_tile_damage(hit_global_pos)
+				if damage_taken > 0:
+					on_enemy_hit(hit_global_pos, damage_taken)
 
 func _process(_delta):
 	# Animation logic update
@@ -93,16 +103,15 @@ func try_pickup_item():
 	else:
 		return false
 	
-func on_enemy_hit(hitter_global_position):
+func on_enemy_hit(hitter_global_position: Vector2, damage: int):
 	var bounce_dir : Vector2 = global_position - hitter_global_position
 	if bounce_dir.is_zero_approx():
 		bounce_dir = Vector2(0, -1)
 	bounce_dir = bounce_dir.normalized()
 	bounce_dir.y -= 1
 	bounce_dir = bounce_dir.normalized()
-	
-	
+
 	velocity = bounce_dir * DAMAGED_VELOCITY
 	
 	if hitpoints > 0:
-		hitpoints -= 10
+		hitpoints -= damage
