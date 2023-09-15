@@ -1,6 +1,5 @@
 [gd_scene load_steps=66 format=3 uid="uid://b7rqlb0ew5vhy"]
 
-[ext_resource type="Script" path="res://scripts/FollowCamera.gd" id="1_e2k8v"]
 [ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://bedrock.png" id="1_pq6fr"]
 [ext_resource type="Texture2D" uid="uid://dfl31qfmfvbnx" path="res://assets/character/player/dead/dead-a.png" id="3_54pe0"]
 [ext_resource type="Texture2D" uid="uid://56mxxpvxn1oe" path="res://assets/tiles/earth_tiles_bg.png" id="3_mx7bm"]
@@ -41,6 +40,7 @@
 [ext_resource type="Texture2D" uid="uid://dxu7kbyvyuwdo" path="res://assets/character/player/wall/wall3.png" id="33_rt4f7"]
 [ext_resource type="PackedScene" uid="uid://bs2d1v0ul56ku" path="res://characters/skeleton.tscn" id="35_1s50l"]
 [ext_resource type="Texture2D" uid="uid://d0muuxweckbqd" path="res://assets/character/objects/diamond.png" id="44_lfyhr"]
+[ext_resource type="Script" path="res://scripts/FollowCamera.gd" id="45_khsfg"]
 [ext_resource type="Texture2D" uid="uid://dtacrmy0shd3k" path="res://assets/character/objects/diamond_floating/diamond_float_1.png" id="45_xfhxk"]
 [ext_resource type="Texture2D" uid="uid://d2cfb1nybpby6" path="res://assets/character/objects/diamond_floating/diamond_float_2.png" id="46_60rm8"]
 [ext_resource type="Script" path="res://scripts/Pickup.gd" id="47_6edv2"]
@@ -420,7 +420,7 @@ centered = false
 metadata/_edit_lock_ = true
 
 [node name="FollowCamera" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
-script = ExtResource("1_e2k8v")
+script = ExtResource("45_khsfg")
 target = NodePath("../Player")
 
 [node name="HUD" type="CanvasLayer" parent="."]
