@@ -8,6 +8,8 @@ const DAMAGED_VELOCITY = 300.0
 const DIG_PERIOD = 0.1
 const DIG_OFFSET = Vector2(32, 32)
 
+enum DAMAGE_TYPE { NORMAL, LAVA }
+
 @export var hitpoints = INITIAL_HP
 @export var hp_bar : TextureProgressBar
 @export var score_value : RichTextLabel
@@ -16,6 +18,15 @@ const DIG_OFFSET = Vector2(32, 32)
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var dig_timer = DIG_PERIOD
 var score = 0
+var last_damage_type = DAMAGE_TYPE.NORMAL
+var started_death_anim = false
+
+func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
+	if hitpoints > 0:
+		hitpoints -= amount
+	last_damage_type = damage_type
+	return hitpoints > 0
+
 
 func _update_dig(delta):
 	dig_timer -= delta
@@ -69,12 +80,19 @@ func _physics_process(delta):
 				var hit_global_pos = floor_collision.get_position()
 				var damage_taken = tilemap_collided.get_tile_damage(hit_global_pos)
 				if damage_taken > 0:
-					on_enemy_hit(hit_global_pos, damage_taken)
+					var still_alive = take_damage(damage_taken, DAMAGE_TYPE.LAVA)
+					if still_alive:
+						on_enemy_hit(hit_global_pos)
 
 func _process(_delta):
 	# Animation logic update
 	if not _is_alive():
-		$AnimatedSprite2D.play("dead")
+		if not started_death_anim:
+			if last_damage_type == DAMAGE_TYPE.LAVA:
+				$AnimatedSprite2D.play("lava")
+			else:
+				$AnimatedSprite2D.play("dead")
+			started_death_anim = true
 	elif is_on_floor():
 		if velocity.x != 0:
 			$AnimatedSprite2D.play("run")
@@ -103,7 +121,7 @@ func try_pickup_item():
 	else:
 		return false
 	
-func on_enemy_hit(hitter_global_position: Vector2, damage: int):
+func on_enemy_hit(hitter_global_position: Vector2):
 	var bounce_dir : Vector2 = global_position - hitter_global_position
 	if bounce_dir.is_zero_approx():
 		bounce_dir = Vector2(0, -1)
@@ -112,6 +130,3 @@ func on_enemy_hit(hitter_global_position: Vector2, damage: int):
 	bounce_dir = bounce_dir.normalized()
 
 	velocity = bounce_dir * DAMAGED_VELOCITY
-	
-	if hitpoints > 0:
-		hitpoints -= damage
