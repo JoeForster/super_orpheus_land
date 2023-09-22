@@ -1,0 +1,47 @@
+[gd_scene load_steps=9 format=3 uid="uid://c6ctwltj1fb"]
+
+[ext_resource type="Texture2D" uid="uid://d0muuxweckbqd" path="res://assets/character/objects/diamond.png" id="1_2ywdi"]
+[ext_resource type="Script" path="res://scripts/Pickup.gd" id="2_4psjy"]
+[ext_resource type="Texture2D" uid="uid://dtacrmy0shd3k" path="res://assets/character/objects/diamond_floating/diamond_float_1.png" id="3_wvkt0"]
+[ext_resource type="Texture2D" uid="uid://d2cfb1nybpby6" path="res://assets/character/objects/diamond_floating/diamond_float_2.png" id="4_qvao6"]
+[ext_resource type="Texture2D" uid="uid://bu2m1at62j4t0" path="res://assets/character/objects/diamond_floating/diamond_float_3.png" id="5_ptt8k"]
+[ext_resource type="Texture2D" uid="uid://bsnwlssrx7d0" path="res://assets/character/objects/diamond_floating/diamond_float_4.png" id="6_4i2k4"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_drip3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_wvkt0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_qvao6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ptt8k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_4i2k4")
+}],
+"loop": true,
+"name": &"float",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lbk7k"]
+size = Vector2(12, 19)
+
+[node name="SoulGem" type="Sprite2D"]
+texture = ExtResource("1_2ywdi")
+script = ExtResource("2_4psjy")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_drip3")
+animation = &"float"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_lbk7k")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
