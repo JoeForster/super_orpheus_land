@@ -1,0 +1,195 @@
+extends CharacterBody2D
+
+const MAX_HP = 100
+const INITIAL_HP = MAX_HP
+const SPEED = 300.0
+const JUMP_VELOCITY = -500.0
+const DAMAGED_VELOCITY = 300.0
+const DIG_PERIOD = 0.1
+const DIG_OFFSET = Vector2(32, 32)
+
+
+enum DAMAGE_TYPE { NORMAL, LAVA }
+enum EQUIP_TYPE {
+	_FIRST,
+	PICKAXE = _FIRST,
+	LYRE,
+	_COUNT }
+
+@export var hitpoints = INITIAL_HP
+@export var hp_bar : TextureProgressBar
+@export var score_value : RichTextLabel
+
+# Get the gravity from the project settings to be synced with RigidBody nodes.
+var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var dig_timer = DIG_PERIOD
+var score = 0
+var last_damage_type = DAMAGE_TYPE.NORMAL
+var started_death_anim = false
+var equipped = EQUIP_TYPE.LYRE
+var is_playing_music = false
+var music_pos = 0.0
+
+var music_player : AudioStreamPlayer = null
+var music_min_vol = -40.0
+var music_target_vol
+var music_fade_rate = 20.0
+
+func _enter_tree():
+	music_player = $"/root/WorldRoot/MusicPlayer"
+	music_target_vol = music_player.volume_db
+	music_player.volume_db = music_min_vol
+	music_player.stream_paused = true
+	
+
+func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
+	if hitpoints > 0:
+		hitpoints -= amount
+	last_damage_type = damage_type
+	return hitpoints > 0
+
+
+func _update_dig(delta):
+	dig_timer -= delta
+	if dig_timer <= 0:
+		dig_timer = DIG_PERIOD
+		# Do a raycast diagonally to attempt a dig in front of the character
+		var space_state = get_world_2d().direct_space_state
+		var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + DIG_OFFSET)
+		raycast_query.exclude = [self]
+		var raycast_result = space_state.intersect_ray(raycast_query)
+		if not raycast_result.is_empty():
+			var tilemap_collided = raycast_result.collider as TileMap
+			if tilemap_collided != null:
+				var dig_global_pos = raycast_result.position
+				tilemap_collided.dig(dig_global_pos)
+
+
+func _update_lyre(delta):
+	# TODO enable attractor that enemies will locate and walk towards but not attack player
+	# TODO start timer on "soothe" 
+	# TODO play some music
+	for body in $MusicArea.get_overlapping_bodies():
+		print("MUSIC ATTRACT: ", body)
+
+func _is_alive():
+	return hitpoints > 0
+
+func _update_controls(delta):
+	# Handle Jump.
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# Handle equipment use
+	if Input.is_action_just_pressed("switch"):
+		equipped = equipped + 1
+		if equipped >= EQUIP_TYPE._COUNT:
+			equipped = EQUIP_TYPE._FIRST
+	
+	is_playing_music = false
+	$Equip/Lyre/MusicParticles.emitting = false
+	
+	if equipped == EQUIP_TYPE.PICKAXE:
+		$Equip/Lyre.hide()
+		$Equip/Pickaxe.show()
+		if Input.is_action_pressed("use"):
+			_update_dig(delta)
+		
+	elif equipped == EQUIP_TYPE.LYRE:
+		$Equip/Lyre.show()
+		$Equip/Pickaxe.hide()
+		if Input.is_action_pressed("use"):
+			is_playing_music = true
+			$Equip/Lyre/MusicParticles.emitting = true
+
+	var player : AudioStreamPlayer = $"/root/WorldRoot/MusicPlayer"
+	if is_playing_music:
+		player.stream_paused = false
+		if player.volume_db < music_target_vol:
+			player.volume_db += delta * music_fade_rate
+		if player.volume_db >= music_target_vol:
+			player.volume_db  = music_target_vol
+	else:
+		if player.volume_db > music_min_vol:
+			player.volume_db -= delta * music_fade_rate
+		if player.volume_db <= music_min_vol:
+			player.volume_db = music_min_vol
+			player.stream_paused = true
+
+	var direction = Input.get_axis("move_left", "move_right")
+	if direction:
+		#print("left/right input: ", direction)
+		velocity.x = direction * SPEED
+	else:
+		#print("left/right input: 0")
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+
+func _physics_process(delta):
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	# CONTROLS
+	if _is_alive():
+		_update_controls(delta)
+
+	move_and_slide()
+	
+	if is_on_floor():
+		var floor_collision : KinematicCollision2D = get_last_slide_collision()
+		if floor_collision != null:
+			var tilemap_collided = floor_collision.get_collider() as TileMap
+			if tilemap_collided != null:
+				var hit_global_pos = floor_collision.get_position()
+				var damage_taken = tilemap_collided.get_tile_damage(hit_global_pos)
+				if damage_taken > 0:
+					var still_alive = take_damage(damage_taken, DAMAGE_TYPE.LAVA)
+					if still_alive:
+						on_enemy_hit(hit_global_pos)
+
+func _process(_delta):
+	# Animation logic update
+	if not _is_alive():
+		if not started_death_anim:
+			if last_damage_type == DAMAGE_TYPE.LAVA:
+				$AnimatedSprite2D.play("lava")
+			else:
+				$AnimatedSprite2D.play("dead")
+			started_death_anim = true
+	elif is_on_floor():
+		if velocity.x != 0:
+			$AnimatedSprite2D.play("run")
+		else:
+			$AnimatedSprite2D.play("idle")
+	else:
+		if velocity.y < 0:
+			$AnimatedSprite2D.play("jump")
+		else:
+			$AnimatedSprite2D.play("fall")
+
+	# Sprite visual update
+	if velocity.x != 0:
+		$AnimatedSprite2D.set_flip_h(velocity.x < 0)
+
+	# HUD update
+	if hp_bar != null:
+		hp_bar.set_value_no_signal(hitpoints);
+	if score_value != null:
+		score_value.text = str(score)
+
+func try_pickup_item():
+	if _is_alive():
+		score += 100
+		return true
+	else:
+		return false
+	
+func on_enemy_hit(hitter_global_position: Vector2):
+	var bounce_dir : Vector2 = global_position - hitter_global_position
+	if bounce_dir.is_zero_approx():
+		bounce_dir = Vector2(0, -1)
+	bounce_dir = bounce_dir.normalized()
+	bounce_dir.y -= 1
+	bounce_dir = bounce_dir.normalized()
+
+	velocity = bounce_dir * DAMAGED_VELOCITY

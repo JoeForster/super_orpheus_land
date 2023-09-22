@@ -3,6 +3,8 @@ extends CharacterBody2D
 const MAX_HP = 10
 const INITIAL_HP = MAX_HP
 const SPEED = 100.0
+const ATTRACTED_SPEED = 60.0
+const ATTRACTED_MIN_DISTANCE = 40.0
 const FALL_CHECK_OFFSET = Vector2(32, 32)
 
 @export var hitpoints = INITIAL_HP
@@ -32,20 +34,39 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		move_and_slide()
+	
 	# Movement logic when on the ground
 	else:
-		# Handle  fall test to turn around. 
-		var turn = _fall_test(delta)
-		if turn:
-			move_direction *= -1
-		# Move and turn next time if we collided.
-		# TODO attack player
-		move_and_slide()
-		if get_last_motion().x == 0:
-			move_direction *= -1
+		
+		# If detecting music, be attracted by that
+		var attracted_to_pos = null
+		var move_speed
+		# TODO use a layer properly so it only picks up the player
+		for body in $DetectorArea2D.get_overlapping_bodies():
+			if body.is_in_group("player"):
+				if body.is_playing_music:
+					attracted_to_pos = body.global_position
+					break
+
+		if attracted_to_pos != null:
+			# If we have an attractor we should ignore fall tests
+			var to_attractor = attracted_to_pos.x - global_position.x
+			if abs(to_attractor) > ATTRACTED_MIN_DISTANCE:
+				move_direction = sign(to_attractor)
+				move_speed = ATTRACTED_SPEED
+			else:
+				move_speed = 0
+		else:
+			# If we didn't move last time, or we're about to fall, then turn.
+			# TODO fix this to properly detect obstacle hit instead; attack player
+			var turn = get_last_motion().x == 0 || _fall_test(delta)
+			if turn:
+				move_direction *= -1
+			move_speed = SPEED
 
 		# TODO detect and seek the player
-		velocity.x = move_direction * SPEED
+		velocity.x = move_direction * move_speed
+		move_and_slide()
 
 func _process(_delta):
 	# Animation logic update

@@ -8,7 +8,13 @@ const DAMAGED_VELOCITY = 300.0
 const DIG_PERIOD = 0.1
 const DIG_OFFSET = Vector2(32, 32)
 
+
 enum DAMAGE_TYPE { NORMAL, LAVA }
+enum EQUIP_TYPE {
+	_FIRST,
+	PICKAXE = _FIRST,
+	LYRE,
+	_COUNT }
 
 @export var hitpoints = INITIAL_HP
 @export var hp_bar : TextureProgressBar
@@ -20,6 +26,21 @@ var dig_timer = DIG_PERIOD
 var score = 0
 var last_damage_type = DAMAGE_TYPE.NORMAL
 var started_death_anim = false
+var equipped = EQUIP_TYPE.LYRE
+var is_playing_music = false
+var music_pos = 0.0
+
+var music_player : AudioStreamPlayer = null
+var music_min_vol = -40.0
+var music_target_vol
+var music_fade_rate = 20.0
+
+func _enter_tree():
+	music_player = $"/root/WorldRoot/MusicPlayer"
+	music_target_vol = music_player.volume_db
+	music_player.volume_db = music_min_vol
+	music_player.stream_paused = true
+	
 
 func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
 	if hitpoints > 0:
@@ -43,9 +64,57 @@ func _update_dig(delta):
 				var dig_global_pos = raycast_result.position
 				tilemap_collided.dig(dig_global_pos)
 
-
 func _is_alive():
 	return hitpoints > 0
+
+func _update_controls(delta):
+	# Handle Jump.
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# Handle equipment use
+	if Input.is_action_just_pressed("switch"):
+		equipped = equipped + 1
+		if equipped >= EQUIP_TYPE._COUNT:
+			equipped = EQUIP_TYPE._FIRST
+	
+	is_playing_music = false
+	$Equip/Lyre/MusicParticles.emitting = false
+	
+	if equipped == EQUIP_TYPE.PICKAXE:
+		$Equip/Lyre.hide()
+		$Equip/Pickaxe.show()
+		if Input.is_action_pressed("use"):
+			_update_dig(delta)
+		
+	elif equipped == EQUIP_TYPE.LYRE:
+		$Equip/Lyre.show()
+		$Equip/Pickaxe.hide()
+		if Input.is_action_pressed("use"):
+			is_playing_music = true
+			$Equip/Lyre/MusicParticles.emitting = true
+
+	var player : AudioStreamPlayer = $"/root/WorldRoot/MusicPlayer"
+	if is_playing_music:
+		player.stream_paused = false
+		if player.volume_db < music_target_vol:
+			player.volume_db += delta * music_fade_rate
+		if player.volume_db >= music_target_vol:
+			player.volume_db  = music_target_vol
+	else:
+		if player.volume_db > music_min_vol:
+			player.volume_db -= delta * music_fade_rate
+		if player.volume_db <= music_min_vol:
+			player.volume_db = music_min_vol
+			player.stream_paused = true
+
+	var direction = Input.get_axis("move_left", "move_right")
+	if direction:
+		#print("left/right input: ", direction)
+		velocity.x = direction * SPEED
+	else:
+		#print("left/right input: 0")
+		velocity.x = move_toward(velocity.x, 0, SPEED)
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -54,21 +123,7 @@ func _physics_process(delta):
 
 	# CONTROLS
 	if _is_alive():
-		# Handle Jump.
-		if Input.is_action_just_pressed("jump") and is_on_floor():
-			velocity.y = JUMP_VELOCITY
-
-		# Handle dig.
-		if Input.is_action_pressed("dig"):
-			_update_dig(delta)
-
-		var direction = Input.get_axis("move_left", "move_right")
-		if direction:
-			#print("left/right input: ", direction)
-			velocity.x = direction * SPEED
-		else:
-			#print("left/right input: 0")
-			velocity.x = move_toward(velocity.x, 0, SPEED)
+		_update_controls(delta)
 
 	move_and_slide()
 	

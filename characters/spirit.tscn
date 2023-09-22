@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://c7ixgoctfde31"]
+[gd_scene load_steps=28 format=3 uid="uid://c7ixgoctfde31"]
 
 [ext_resource type="Script" path="res://scripts/Enemy.gd" id="1_ordqf"]
 [ext_resource type="Texture2D" uid="uid://bobna1gvgn505" path="res://assets/character/enemy/ghost/dead/dead1.png" id="2_rtxfv"]
@@ -212,6 +212,9 @@ size = Vector2(10, 17)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rbtmr"]
 size = Vector2(14, 21)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_50np2"]
+radius = 143.031
+
 [node name="Spirit" type="CharacterBody2D"]
 scale = Vector2(2, 2)
 script = ExtResource("1_ordqf")
@@ -230,5 +233,10 @@ script = ExtResource("23_cq7wr")
 
 [node name="HurtBoxShape" type="CollisionShape2D" parent="HurtBoxArea2D"]
 shape = SubResource("RectangleShape2D_rbtmr")
+
+[node name="DetectorArea2D" type="Area2D" parent="."]
+
+[node name="DetectorShape" type="CollisionShape2D" parent="DetectorArea2D"]
+shape = SubResource("CircleShape2D_50np2")
 
 [connection signal="body_entered" from="HurtBoxArea2D" to="HurtBoxArea2D" method="_on_hurt_box_body_entered"]
