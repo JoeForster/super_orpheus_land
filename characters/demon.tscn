@@ -1,0 +1,140 @@
+[gd_scene load_steps=18 format=3 uid="uid://dirqdh3ej7fj7"]
+
+[ext_resource type="Script" path="res://scripts/Enemy.gd" id="1_jan3y"]
+[ext_resource type="Texture2D" uid="uid://vvpdwpkwohml" path="res://assets/character/enemy/demon/dead/dead1.png" id="2_d7yae"]
+[ext_resource type="Texture2D" uid="uid://b5t15tp1e4dnb" path="res://assets/character/enemy/demon/dead/dead2.png" id="3_ugnox"]
+[ext_resource type="Texture2D" uid="uid://dtpipg41ns6ef" path="res://assets/character/enemy/demon/dead/dead3.png" id="4_dmbo1"]
+[ext_resource type="Texture2D" uid="uid://1wmuyjwmx1jt" path="res://assets/character/enemy/demon/dead/dead4.png" id="5_w6jbu"]
+[ext_resource type="Texture2D" uid="uid://cqcdsl0w0k0tq" path="res://assets/character/enemy/demon/dead/dead5.png" id="6_46gwf"]
+[ext_resource type="Texture2D" uid="uid://cug8pbhxdbdv4" path="res://assets/character/enemy/demon/dead/dead6.png" id="7_uh7b4"]
+[ext_resource type="Texture2D" uid="uid://bi1ql3gt82dj2" path="res://assets/character/enemy/demon/dead/dead7.png" id="8_ho5v5"]
+[ext_resource type="Texture2D" uid="uid://c4av0tgydbm75" path="res://assets/character/enemy/demon/dead/dead8.png" id="9_5bi0w"]
+[ext_resource type="Texture2D" uid="uid://wcqo82md1jqd" path="res://assets/character/enemy/demon/walk/walk3.png" id="10_lvq33"]
+[ext_resource type="Texture2D" uid="uid://cf7fayjkvmwml" path="res://assets/character/enemy/demon/walk/walk2.png" id="11_t3sp8"]
+[ext_resource type="Texture2D" uid="uid://botinst7ivo5b" path="res://assets/character/enemy/demon/walk/walk1.png" id="12_tm20f"]
+[ext_resource type="Script" path="res://scripts/Damager.gd" id="23_pioiq"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_avb0i"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_d7yae")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ugnox")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dmbo1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_w6jbu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_46gwf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_uh7b4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ho5v5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_5bi0w")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_lvq33")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_t3sp8")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_lvq33")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_tm20f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_t3sp8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_lvq33")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_tm20f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_t3sp8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_lvq33")
+}],
+"loop": true,
+"name": &"wall",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ckq11"]
+size = Vector2(10, 17)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rbtmr"]
+size = Vector2(14, 17.5)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7xv4i"]
+radius = 100.0
+
+[node name="Demon" type="CharacterBody2D"]
+scale = Vector2(2, 2)
+script = ExtResource("1_jan3y")
+move_speed_normal = 150.0
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1, 1.1)
+sprite_frames = SubResource("SpriteFrames_avb0i")
+animation = &"wall"
+
+[node name="PhysicsBox" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_ckq11")
+
+[node name="HurtBoxArea2D" type="Area2D" parent="."]
+script = ExtResource("23_pioiq")
+
+[node name="HurtBoxShape" type="CollisionShape2D" parent="HurtBoxArea2D"]
+position = Vector2(0, 0.25)
+shape = SubResource("RectangleShape2D_rbtmr")
+debug_color = Color(1, 0, 0, 0.419608)
+
+[node name="DetectorArea2D" type="Area2D" parent="."]
+
+[node name="DetectorShape" type="CollisionShape2D" parent="DetectorArea2D"]
+shape = SubResource("CircleShape2D_7xv4i")
+debug_color = Color(0.203922, 0.235294, 1, 0.054902)
+
+[connection signal="body_entered" from="HurtBoxArea2D" to="HurtBoxArea2D" method="_on_hurt_box_body_entered"]

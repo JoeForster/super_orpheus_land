@@ -1,12 +1,5 @@
 extends CharacterBody2D
 
-const MAX_HP = 100
-const INITIAL_HP = MAX_HP
-const SPEED = 300.0
-const JUMP_VELOCITY = -500.0
-const DAMAGED_VELOCITY = 300.0
-const DIG_PERIOD = 0.1
-const DIG_OFFSET = Vector2(32, 32)
 
 
 enum DAMAGE_TYPE { NORMAL, LAVA }
@@ -16,12 +9,25 @@ enum EQUIP_TYPE {
 	LYRE,
 	_COUNT }
 
-@export var hitpoints = INITIAL_HP
+# Export variables (settings, were constants)
+@export var MAX_HP : int
+@export var SPEED : float
+@export var JUMP_VELOCITY : int
+@export var JUMP_BOOST_PERIOD : float
+@export var JUMP_BOOST_VEL_PER_SEC : int
+@export var DAMAGED_VELOCITY : float
+@export var DIG_PERIOD : float
+@export var DIG_OFFSET : Vector2
+
+@export var hitpoints : int
 @export var hp_bar : TextureProgressBar
 @export var score_value : RichTextLabel
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+
+
+var jump_boost_timer = JUMP_BOOST_PERIOD
 var dig_timer = DIG_PERIOD
 var score = 0
 var last_damage_type = DAMAGE_TYPE.NORMAL
@@ -29,7 +35,6 @@ var started_death_anim = false
 var equipped = EQUIP_TYPE.LYRE
 var is_playing_music = false
 var music_pos = 0.0
-
 var music_player : AudioStreamPlayer = null
 var music_min_vol = -40.0
 var music_target_vol
@@ -40,6 +45,8 @@ func _enter_tree():
 	music_target_vol = music_player.volume_db
 	music_player.volume_db = music_min_vol
 	music_player.stream_paused = true
+	
+	hitpoints = MAX_HP
 	
 
 func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
@@ -69,18 +76,23 @@ func _is_alive():
 
 func _update_controls(delta):
 	# Handle Jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+	if is_on_floor():
+		jump_boost_timer = JUMP_BOOST_PERIOD
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = JUMP_VELOCITY
+	elif Input.is_action_pressed("jump"):
+		if jump_boost_timer > 0.0:
+			jump_boost_timer = jump_boost_timer - delta
+			velocity.y += JUMP_BOOST_VEL_PER_SEC * delta
+		else:
+			jump_boost_timer = 0.0
 
 	# Handle equipment use
 	if Input.is_action_just_pressed("switch"):
 		equipped = equipped + 1
 		if equipped >= EQUIP_TYPE._COUNT:
 			equipped = EQUIP_TYPE._FIRST
-	
-	is_playing_music = false
-	$Equip/Lyre/MusicParticles.emitting = false
-	
+
 	if equipped == EQUIP_TYPE.PICKAXE:
 		$Equip/Lyre.hide()
 		$Equip/Pickaxe.show()
@@ -92,29 +104,32 @@ func _update_controls(delta):
 		$Equip/Pickaxe.hide()
 		if Input.is_action_pressed("use"):
 			is_playing_music = true
-			$Equip/Lyre/MusicParticles.emitting = true
 
-	var player : AudioStreamPlayer = $"/root/WorldRoot/MusicPlayer"
-	if is_playing_music:
-		player.stream_paused = false
-		if player.volume_db < music_target_vol:
-			player.volume_db += delta * music_fade_rate
-		if player.volume_db >= music_target_vol:
-			player.volume_db  = music_target_vol
-	else:
-		if player.volume_db > music_min_vol:
-			player.volume_db -= delta * music_fade_rate
-		if player.volume_db <= music_min_vol:
-			player.volume_db = music_min_vol
-			player.stream_paused = true
-
+	# Player can walk as long as they're not playing the lyre
 	var direction = Input.get_axis("move_left", "move_right")
-	if direction:
+	if direction and not is_playing_music:
 		#print("left/right input: ", direction)
 		velocity.x = direction * SPEED
 	else:
 		#print("left/right input: 0")
 		velocity.x = move_toward(velocity.x, 0, SPEED)
+
+func _update_equip_effects(delta):
+		
+	$Equip/Lyre/MusicParticles.emitting = is_playing_music
+	if is_playing_music:
+		music_player.stream_paused = false
+		if music_player.volume_db < music_target_vol:
+			music_player.volume_db += delta * music_fade_rate
+		if music_player.volume_db >= music_target_vol:
+			music_player.volume_db  = music_target_vol
+	else:
+		if music_player.volume_db > music_min_vol:
+			music_player.volume_db -= delta * music_fade_rate
+		if music_player.volume_db <= music_min_vol:
+			music_player.volume_db = music_min_vol
+			music_player.stream_paused = true
+
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -122,8 +137,15 @@ func _physics_process(delta):
 		velocity.y += gravity * delta
 
 	# CONTROLS
+	# TODO should be in process, but does mess with velocity directly!
+	
+	is_playing_music = false
 	if _is_alive():
 		_update_controls(delta)
+	elif last_damage_type == DAMAGE_TYPE.LAVA:
+		velocity = Vector2.ZERO # Stop moving as we're doing the sink anim
+		
+	_update_equip_effects(delta)
 
 	move_and_slide()
 	

@@ -1,13 +1,12 @@
 extends CharacterBody2D
 
-const MAX_HP = 10
-const INITIAL_HP = MAX_HP
-const SPEED = 100.0
-const ATTRACTED_SPEED = 60.0
 const ATTRACTED_MIN_DISTANCE = 40.0
 const FALL_CHECK_OFFSET = Vector2(32, 32)
 
-@export var hitpoints = INITIAL_HP
+@export var hitpoints = 10
+@export var is_affected_by_music = true
+@export var move_speed_normal = 100.0
+@export var move_speed_soothed = 60.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -40,7 +39,7 @@ func _physics_process(delta):
 		
 		# If detecting music, be attracted by that
 		var attracted_to_pos = null
-		var move_speed
+		var current_move_speed
 		# TODO use a layer properly so it only picks up the player
 		for body in $DetectorArea2D.get_overlapping_bodies():
 			if body.is_in_group("player"):
@@ -53,19 +52,19 @@ func _physics_process(delta):
 			var to_attractor = attracted_to_pos.x - global_position.x
 			if abs(to_attractor) > ATTRACTED_MIN_DISTANCE:
 				move_direction = sign(to_attractor)
-				move_speed = ATTRACTED_SPEED
+				current_move_speed = move_speed_soothed
 			else:
-				move_speed = 0
+				current_move_speed = 0
 		else:
 			# If we didn't move last time, or we're about to fall, then turn.
 			# TODO fix this to properly detect obstacle hit instead; attack player
 			var turn = get_last_motion().x == 0 || _fall_test(delta)
 			if turn:
 				move_direction *= -1
-			move_speed = SPEED
+			current_move_speed = move_speed_normal
 
 		# TODO detect and seek the player
-		velocity.x = move_direction * move_speed
+		velocity.x = move_direction * current_move_speed
 		move_and_slide()
 
 func _process(_delta):

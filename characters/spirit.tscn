@@ -207,10 +207,10 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ckq11"]
-size = Vector2(10, 17)
+size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rbtmr"]
-size = Vector2(14, 21)
+size = Vector2(18, 15.5)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_50np2"]
 radius = 143.031
@@ -232,11 +232,14 @@ shape = SubResource("RectangleShape2D_ckq11")
 script = ExtResource("23_cq7wr")
 
 [node name="HurtBoxShape" type="CollisionShape2D" parent="HurtBoxArea2D"]
+position = Vector2(0, -0.75)
 shape = SubResource("RectangleShape2D_rbtmr")
+debug_color = Color(1, 0, 0, 0.419608)
 
 [node name="DetectorArea2D" type="Area2D" parent="."]
 
 [node name="DetectorShape" type="CollisionShape2D" parent="DetectorArea2D"]
 shape = SubResource("CircleShape2D_50np2")
+debug_color = Color(0.203922, 0.235294, 1, 0.054902)
 
 [connection signal="body_entered" from="HurtBoxArea2D" to="HurtBoxArea2D" method="_on_hurt_box_body_entered"]

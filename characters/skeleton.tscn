@@ -131,7 +131,7 @@ animations = [{
 size = Vector2(10, 17)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rbtmr"]
-size = Vector2(14, 21)
+size = Vector2(14, 17.5)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7xv4i"]
 radius = 100.0
@@ -143,21 +143,26 @@ metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
+scale = Vector2(1, 1.1)
 sprite_frames = SubResource("SpriteFrames_avb0i")
 animation = &"run"
 
 [node name="PhysicsBox" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
 shape = SubResource("RectangleShape2D_ckq11")
 
 [node name="HurtBoxArea2D" type="Area2D" parent="."]
 script = ExtResource("13_r3p5p")
 
 [node name="HurtBoxShape" type="CollisionShape2D" parent="HurtBoxArea2D"]
+position = Vector2(0, 0.25)
 shape = SubResource("RectangleShape2D_rbtmr")
+debug_color = Color(1, 0, 0, 0.419608)
 
 [node name="DetectorArea2D" type="Area2D" parent="."]
 
 [node name="DetectorShape" type="CollisionShape2D" parent="DetectorArea2D"]
 shape = SubResource("CircleShape2D_7xv4i")
+debug_color = Color(0.203922, 0.235294, 1, 0.054902)
 
 [connection signal="body_entered" from="HurtBoxArea2D" to="HurtBoxArea2D" method="_on_hurt_box_body_entered"]
