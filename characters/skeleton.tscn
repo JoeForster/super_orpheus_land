@@ -139,6 +139,7 @@ radius = 100.0
 [node name="Skeleton" type="CharacterBody2D"]
 scale = Vector2(2, 2)
 script = ExtResource("1_reun7")
+is_damaged_by_lava = true
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

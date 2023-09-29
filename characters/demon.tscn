@@ -111,6 +111,8 @@ radius = 100.0
 scale = Vector2(2, 2)
 script = ExtResource("1_jan3y")
 move_speed_normal = 150.0
+jump_period = 1.0
+jump_velocity = -300.0
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

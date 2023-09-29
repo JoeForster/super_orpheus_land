@@ -7,11 +7,11 @@ const FALL_CHECK_OFFSET = Vector2(64, 32)
 @export var is_affected_by_music = true
 @export var move_speed_normal = 100.0
 @export var move_speed_soothed = 60.0
-@export var jump_period = 1.0
-@export var jump_velocity = -400.0
+@export var jump_period = 0.0
+@export var jump_velocity = -200.0
 @export var jump_wanted = false
 @export var turn_counter = 0
-@export var is_damaged_by_lava = true
+@export var is_damaged_by_lava = false
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
