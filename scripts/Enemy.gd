@@ -4,6 +4,7 @@ const ATTRACTED_MIN_DISTANCE = 40.0
 const FALL_CHECK_OFFSET = Vector2(64, 32)
 
 @export var hitpoints = 10
+@export var flying = false
 @export var is_affected_by_music = true
 @export var move_speed_normal = 100.0
 @export var move_speed_soothed = 60.0
@@ -20,6 +21,10 @@ var jump_timer = 0.0
 
 # TODO doesn't work with the jump logic, need extended check to judge if falling off ledge
 func _fall_test(_delta):
+	# HACKY ignore fall if flying creature
+	if flying:
+		return false
+	
 	# Shape cast with our collider to test whether we're about to fall
 	var space_state = get_world_2d().direct_space_state
 	var shapecast_query_params = PhysicsShapeQueryParameters2D.new()
@@ -38,9 +43,13 @@ func _fall_test(_delta):
 func _physics_process(delta):
 	# In air: apply gravity.
 	if not is_on_floor():
-		velocity.y += gravity * delta
-		move_and_slide()
-		return
+		if not flying:
+			velocity.y += gravity * delta
+			move_and_slide()
+			return
+		else:
+			move_and_slide()
+		
 	
 	# Dead: no other movement logic
 	if hitpoints <= 0:
@@ -58,7 +67,7 @@ func _physics_process(delta):
 				hitpoints -= damage_taken
 
 	# Movement logic when on the ground
-	if hitpoints > 0 && is_on_floor():
+	if hitpoints > 0:
 		
 		# If detecting music, be attracted by that
 		var attracted_to_pos = null

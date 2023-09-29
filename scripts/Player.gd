@@ -11,6 +11,9 @@ enum EQUIP_TYPE {
 
 # Export variables (settings, were constants)
 @export var MAX_HP : int
+@export var MAX_EP : float
+@export var EP_CHARGE_RATE : float
+@export var EP_DRAIN_RATE : float
 @export var SPEED : float
 @export var JUMP_VELOCITY : int
 @export var JUMP_BOOST_PERIOD : float
@@ -20,7 +23,9 @@ enum EQUIP_TYPE {
 @export var DIG_OFFSET : Vector2
 
 @export var hitpoints : int
+@export var energypoints : float
 @export var hp_bar : TextureProgressBar
+@export var ep_bar : TextureProgressBar
 @export var score_value : RichTextLabel
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -47,6 +52,7 @@ func _enter_tree():
 	music_player.stream_paused = true
 	
 	hitpoints = MAX_HP
+	energypoints = MAX_EP
 	
 
 func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
@@ -94,6 +100,7 @@ func _update_controls(delta):
 			equipped = EQUIP_TYPE._FIRST
 
 	if equipped == EQUIP_TYPE.PICKAXE:
+		is_playing_music = false
 		$Equip/Lyre.hide()
 		$Equip/Pickaxe.show()
 		if Input.is_action_pressed("use"):
@@ -102,8 +109,12 @@ func _update_controls(delta):
 	elif equipped == EQUIP_TYPE.LYRE:
 		$Equip/Lyre.show()
 		$Equip/Pickaxe.hide()
-		if Input.is_action_pressed("use"):
+		if energypoints < 1.0:
+			is_playing_music = false
+		elif Input.is_action_just_pressed("use"):
 			is_playing_music = true
+		elif Input.is_action_just_released("use"):
+			is_playing_music = false
 
 	# Player can walk as long as they're not playing the lyre
 	var direction = Input.get_axis("move_left", "move_right")
@@ -138,12 +149,13 @@ func _physics_process(delta):
 
 	# CONTROLS
 	# TODO should be in process, but does mess with velocity directly!
-	
-	is_playing_music = false
+
 	if _is_alive():
 		_update_controls(delta)
-	elif last_damage_type == DAMAGE_TYPE.LAVA:
-		velocity = Vector2.ZERO # Stop moving as we're doing the sink anim
+	else:
+		is_playing_music = false
+		if last_damage_type == DAMAGE_TYPE.LAVA:
+			velocity = Vector2.ZERO # Stop moving as we're doing the sink anim
 		
 	_update_equip_effects(delta)
 
@@ -161,7 +173,18 @@ func _physics_process(delta):
 					if still_alive:
 						on_enemy_hit(hit_global_pos)
 
-func _process(_delta):
+func _process(delta):
+	# Energy charge/drain
+	if is_playing_music:
+		energypoints -= delta * EP_DRAIN_RATE
+		if energypoints < 0:
+			energypoints = 0
+	else:
+		energypoints += delta * EP_CHARGE_RATE
+		if energypoints > MAX_EP:
+			energypoints = MAX_EP
+		
+	
 	# Animation logic update
 	if not _is_alive():
 		if not started_death_anim:
@@ -188,6 +211,8 @@ func _process(_delta):
 	# HUD update
 	if hp_bar != null:
 		hp_bar.set_value_no_signal(hitpoints);
+	if ep_bar != null:
+		ep_bar.set_value_no_signal(energypoints);
 	if score_value != null:
 		score_value.text = str(score)
 

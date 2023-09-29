@@ -218,6 +218,7 @@ radius = 143.031
 [node name="Spirit" type="CharacterBody2D"]
 scale = Vector2(2, 2)
 script = ExtResource("1_ordqf")
+flying = true
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -230,6 +231,7 @@ shape = SubResource("RectangleShape2D_ckq11")
 
 [node name="HurtBoxArea2D" type="Area2D" parent="."]
 script = ExtResource("23_cq7wr")
+damage_on_hit = 25
 
 [node name="HurtBoxShape" type="CollisionShape2D" parent="HurtBoxArea2D"]
 position = Vector2(0, -0.75)
