@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://b7rqlb0ew5vhy"]
+[gd_scene load_steps=63 format=3 uid="uid://b7rqlb0ew5vhy"]
 
 [ext_resource type="Script" path="res://scripts/FollowCamera.gd" id="1_e2k8v"]
 [ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://bedrock.png" id="1_pq6fr"]
@@ -36,10 +36,7 @@
 [ext_resource type="Texture2D" uid="uid://djtq56e0lk08f" path="res://assets/character/player/run/run5.png" id="29_kkvkw"]
 [ext_resource type="Texture2D" uid="uid://buras284tgfrb" path="res://assets/character/player/run/run6.png" id="30_1qnn3"]
 [ext_resource type="Texture2D" uid="uid://c58ukv116obyu" path="res://assets/character/player/lava/lava17.png" id="30_o2ljh"]
-[ext_resource type="Texture2D" uid="uid://i6s24uxf1jat" path="res://assets/character/player/wall/wall1.png" id="31_5k3h3"]
-[ext_resource type="Texture2D" uid="uid://6n45tvbi5pyn" path="res://assets/character/player/wall/wall2.png" id="32_eryh7"]
 [ext_resource type="Texture2D" uid="uid://csfu2ac0ixfo0" path="res://assets/tiles/earth_tiles.png" id="33_0fcu0"]
-[ext_resource type="Texture2D" uid="uid://dxu7kbyvyuwdo" path="res://assets/character/player/wall/wall3.png" id="33_rt4f7"]
 [ext_resource type="PackedScene" uid="uid://bs2d1v0ul56ku" path="res://characters/skeleton.tscn" id="35_1s50l"]
 [ext_resource type="Texture2D" uid="uid://cwefqoq4qti5j" path="res://assets/character/objects/pickaxe.png" id="39_hfod7"]
 [ext_resource type="Texture2D" uid="uid://vn5u5rdro82n" path="res://assets/character/objects/lyre.png" id="40_7u8no"]
@@ -246,20 +243,6 @@ animations = [{
 "loop": true,
 "name": &"run",
 "speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("31_5k3h3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("32_eryh7")
-}, {
-"duration": 1.0,
-"texture": ExtResource("33_rt4f7")
-}],
-"loop": true,
-"name": &"wall",
-"speed": 5.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ckq11"]
@@ -349,7 +332,7 @@ metadata/_edit_group_ = true
 texture_filter = 1
 position = Vector2(0, 1)
 sprite_frames = SubResource("SpriteFrames_vwpxq")
-animation = &"lava"
+animation = &"dead"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2(0.5, 1.5)
