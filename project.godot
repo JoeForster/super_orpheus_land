@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="World Digger"
+config/name="Super Orpheus Land"
 run/main_scene="res://TestWorld.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 run/max_fps=141
