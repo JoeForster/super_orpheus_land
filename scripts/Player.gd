@@ -19,9 +19,11 @@ enum EQUIP_TYPE {
 @export var JUMP_BOOST_PERIOD : float
 @export var JUMP_BOOST_VEL_PER_SEC : int
 @export var DAMAGED_VELOCITY : float
+@export var RESPAWN_TIME : float
 @export var DIG_PERIOD : float
 @export var DIG_OFFSET : Vector2
 
+@export var spawn_point : Node2D
 @export var hitpoints : int
 @export var energypoints : float
 @export var hp_bar : TextureProgressBar
@@ -34,6 +36,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 var jump_boost_timer = JUMP_BOOST_PERIOD
 var dig_timer = DIG_PERIOD
+var respawn_timer = 0
 var score = 0
 var last_damage_type = DAMAGE_TYPE.NORMAL
 var started_death_anim = false
@@ -48,12 +51,18 @@ var music_fade_rate = 20.0
 func _enter_tree():
 	music_player = $"/root/WorldRoot/MusicPlayer"
 	music_target_vol = music_player.volume_db
-	music_player.volume_db = music_min_vol
-	music_player.stream_paused = true
 	
+	reset()
+	
+func reset():
+	# TODO manage respawn flow separately and destroy/recreate instead of this mess
 	hitpoints = MAX_HP
 	energypoints = MAX_EP
-	
+	music_player.volume_db = music_min_vol
+	music_player.stream_paused = true
+	position = spawn_point.position
+	started_death_anim = false
+	score = 0
 
 func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
 	if hitpoints > 0:
@@ -193,6 +202,12 @@ func _process(delta):
 			else:
 				$AnimatedSprite2D.play("dead")
 			started_death_anim = true
+			
+		respawn_timer += delta
+		if respawn_timer >= RESPAWN_TIME:
+			respawn_timer = 0
+			reset()
+		
 	elif is_on_floor():
 		if velocity.x != 0:
 			$AnimatedSprite2D.play("run")
