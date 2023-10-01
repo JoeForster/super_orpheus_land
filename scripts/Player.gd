@@ -51,18 +51,16 @@ var music_fade_rate = 20.0
 func _enter_tree():
 	music_player = $"/root/WorldRoot/MusicPlayer"
 	music_target_vol = music_player.volume_db
-	
-	reset()
-	
-func reset():
-	# TODO manage respawn flow separately and destroy/recreate instead of this mess
-	hitpoints = MAX_HP
-	energypoints = MAX_EP
 	music_player.volume_db = music_min_vol
 	music_player.stream_paused = true
+	
+	hitpoints = MAX_HP
+	energypoints = MAX_EP
 	position = spawn_point.position
-	started_death_anim = false
-	score = 0
+
+func reset_world():
+	# TODO manage flow separate from player script
+	get_tree().reload_current_scene()
 
 func take_damage(amount : int, damage_type : DAMAGE_TYPE = DAMAGE_TYPE.NORMAL):
 	if hitpoints > 0:
@@ -206,7 +204,7 @@ func _process(delta):
 		respawn_timer += delta
 		if respawn_timer >= RESPAWN_TIME:
 			respawn_timer = 0
-			reset()
+			reset_world()
 		
 	elif is_on_floor():
 		if velocity.x != 0:
