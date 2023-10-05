@@ -1,13 +1,13 @@
 [gd_scene load_steps=69 format=3 uid="uid://b7rqlb0ew5vhy"]
 
 [ext_resource type="Script" path="res://scripts/FollowCamera.gd" id="1_h6jr2"]
+[ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://assets/tiles/bedrock.png" id="3_6fsmo"]
 [ext_resource type="AudioStream" uid="uid://c5d4ia8cfft1h" path="res://assets/music/lyre_seikilos_epitaph.mp3" id="3_8fxw4"]
 [ext_resource type="Texture2D" uid="uid://borhlw2buoitk" path="res://assets/bg/parallax-mountain-bg-1280.png" id="4_424rf"]
 [ext_resource type="Texture2D" uid="uid://btp26t3w1dvpv" path="res://assets/bg/parallax-mountain-mountain-far-1280.png" id="5_78rhd"]
 [ext_resource type="Texture2D" uid="uid://dg82w4tpxiebu" path="res://assets/bg/parallax-mountain-mountains-1280.png" id="6_7dau7"]
 [ext_resource type="Texture2D" uid="uid://d02sqeuheemkm" path="res://assets/bg/parallax-mountain-trees-1280.png" id="7_g3nx1"]
 [ext_resource type="Texture2D" uid="uid://daw8tkwn5o2x1" path="res://assets/bg/parallax-mountain-foreground-trees-1280.png" id="8_pggd3"]
-[ext_resource type="Texture2D" uid="uid://rv564njtdn0b" path="res://bedrock.png" id="9_350fi"]
 [ext_resource type="Texture2D" uid="uid://csfu2ac0ixfo0" path="res://assets/tiles/earth_tiles.png" id="10_kbo17"]
 [ext_resource type="Texture2D" uid="uid://56mxxpvxn1oe" path="res://assets/tiles/earth_tiles_bg.png" id="11_tua07"]
 [ext_resource type="Texture2D" uid="uid://c1ayxqdxm7d1s" path="res://assets/tiles/lava.png" id="12_mnrdm"]
@@ -403,7 +403,7 @@ shape = SubResource("WorldBoundaryShape2D_aenl4")
 texture_repeat = 2
 position = Vector2(-582, 0)
 scale = Vector2(1.795, 1.6275)
-texture = ExtResource("9_350fi")
+texture = ExtResource("3_6fsmo")
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 6000, 600)

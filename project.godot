@@ -11,10 +11,11 @@ config_version=5
 [application]
 
 config/name="Super Orpheus Land"
+config/description="Joe Forster's entry Autumn Jam 2023 (sadly not as finished as I'd like)"
 run/main_scene="res://scenes/Level0.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 run/max_fps=141
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
 
 [autoload]
 
