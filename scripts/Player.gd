@@ -1,13 +1,6 @@
 extends CharacterBody2D
 
-
-
 enum DAMAGE_TYPE { NORMAL, LAVA }
-enum EQUIP_TYPE {
-	_FIRST,
-	PICKAXE = _FIRST,
-	LYRE,
-	_COUNT }
 
 # Export variables (settings, were constants)
 @export var MAX_HP : int
@@ -29,18 +22,24 @@ enum EQUIP_TYPE {
 @export var hp_bar : TextureProgressBar
 @export var ep_bar : TextureProgressBar
 @export var score_value : RichTextLabel
+@export var hint_label : RichTextLabel
+@export var hint_hide_time : float
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 
 var jump_boost_timer = JUMP_BOOST_PERIOD
-var dig_timer = DIG_PERIOD
+var dig_timer = 0
+var last_dig_global_pos : Vector2
+var is_digging = false
 var respawn_timer = 0
+var hint_timer = -1
 var score = 0
 var last_damage_type = DAMAGE_TYPE.NORMAL
 var started_death_anim = false
-var equipped = EQUIP_TYPE.LYRE
+var inventory = [PlayerState.EQUIP_TYPE.NOTHING]
+var equipped_index = 0
 var is_playing_music = false
 var music_pos = 0.0
 var music_player : AudioStreamPlayer = null
@@ -75,17 +74,25 @@ func _update_dig(delta):
 		dig_timer = DIG_PERIOD
 		# Do a raycast diagonally to attempt a dig in front of the character
 		var space_state = get_world_2d().direct_space_state
-		var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + DIG_OFFSET)
+		var dig_offset_oriented = DIG_OFFSET
+		if $AnimatedSprite2D.is_flipped_h():
+			dig_offset_oriented.x *= -1
+		var raycast_query = PhysicsRayQueryParameters2D.create(global_position, global_position + dig_offset_oriented)
 		raycast_query.exclude = [self]
 		var raycast_result = space_state.intersect_ray(raycast_query)
 		if not raycast_result.is_empty():
 			var tilemap_collided = raycast_result.collider as TileMap
 			if tilemap_collided != null:
-				var dig_global_pos = raycast_result.position
-				tilemap_collided.dig(dig_global_pos)
+				last_dig_global_pos = raycast_result.position
+				tilemap_collided.dig(last_dig_global_pos)
+				return true
+	return false
 
 func _is_alive():
 	return hitpoints > 0
+
+func _get_equipped_item():
+	return inventory[equipped_index]
 
 func _update_controls(delta):
 	# Handle Jump.
@@ -102,26 +109,37 @@ func _update_controls(delta):
 
 	# Handle equipment use
 	if Input.is_action_just_pressed("switch"):
-		equipped = equipped + 1
-		if equipped >= EQUIP_TYPE._COUNT:
-			equipped = EQUIP_TYPE._FIRST
+		equipped_index = equipped_index + 1
+		if equipped_index >= inventory.size():
+			equipped_index = 0
 
-	if equipped == EQUIP_TYPE.PICKAXE:
-		is_playing_music = false
+	var equipped = _get_equipped_item()
+	if equipped == PlayerState.EQUIP_TYPE.PICKAXE:
 		$Equip/Lyre.hide()
 		$Equip/Pickaxe.show()
+		is_playing_music = false
 		if Input.is_action_pressed("use"):
-			_update_dig(delta)
+			is_digging = _update_dig(delta)
+		else:
+			is_digging = false
 		
-	elif equipped == EQUIP_TYPE.LYRE:
+	elif equipped == PlayerState.EQUIP_TYPE.LYRE:
 		$Equip/Lyre.show()
 		$Equip/Pickaxe.hide()
+		is_digging = false
 		if energypoints < 1.0:
 			is_playing_music = false
 		elif Input.is_action_just_pressed("use"):
 			is_playing_music = true
 		elif Input.is_action_just_released("use"):
 			is_playing_music = false
+	else:
+		# TODO use inventory array instead and separate show/hide from equip-specific logic above
+		is_playing_music = false
+		is_digging = false
+		$Equip/Lyre.hide()
+		$Equip/Pickaxe.hide()
+
 
 	# Player can walk as long as they're not playing the lyre
 	var direction = Input.get_axis("move_left", "move_right")
@@ -147,6 +165,10 @@ func _update_equip_effects(delta):
 		if music_player.volume_db <= music_min_vol:
 			music_player.volume_db = music_min_vol
 			music_player.stream_paused = true
+			
+	$Equip/Pickaxe/DigParticles.emitting = is_digging
+	if is_digging:
+		$Equip/Pickaxe/DigParticles.global_position = last_dig_global_pos
 
 
 func _physics_process(delta):
@@ -219,7 +241,10 @@ func _process(delta):
 
 	# Sprite visual update
 	if velocity.x != 0:
-		$AnimatedSprite2D.set_flip_h(velocity.x < 0)
+		var facing_left = velocity.x < 0
+		$AnimatedSprite2D.set_flip_h(facing_left)
+		$Equip.set_scale(Vector2(-1 if facing_left else 1, 1))
+
 
 	# HUD update
 	if hp_bar != null:
@@ -229,9 +254,20 @@ func _process(delta):
 	if score_value != null:
 		score_value.text = str(score)
 
-func try_pickup_item():
+	if Input.is_anything_pressed() and hint_timer == -1:
+		hint_timer = hint_hide_time
+	if hint_timer > 0:
+		hint_timer -= delta
+		if hint_timer <= 0:
+			hint_timer = 0
+			hint_label.hide()
+
+func try_pickup_item(score_to_add : int, equip_to_add : PlayerState.EQUIP_TYPE):
 	if _is_alive():
-		score += 100
+		score += score
+		if not inventory.has(equip_to_add):
+			equipped_index = inventory.size()
+			inventory.push_back(equip_to_add)
 		return true
 	else:
 		return false

@@ -16,6 +16,14 @@ config/features=PackedStringArray("4.1", "Forward Plus")
 run/max_fps=141
 config/icon="res://icon.svg"
 
+[autoload]
+
+PlayerState="*res://scripts/PlayerState.gd"
+
+[display]
+
+window/size/resizable=false
+
 [input]
 
 move_right={

@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://c3xl7yt4xgbps"]
+
+[ext_resource type="Texture2D" uid="uid://vn5u5rdro82n" path="res://assets/character/objects/lyre.png" id="1_dj6hq"]
+[ext_resource type="Script" path="res://scripts/Pickup.gd" id="2_w57vm"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_n5a60"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_dj6hq")
+}],
+"loop": true,
+"name": &"float",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lbk7k"]
+size = Vector2(14, 14)
+
+[node name="LyrePickup" type="Node2D"]
+script = ExtResource("2_w57vm")
+score = 0
+equip = 1
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -1)
+scale = Vector2(1.40909, 1.40909)
+sprite_frames = SubResource("SpriteFrames_n5a60")
+animation = &"float"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_lbk7k")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
