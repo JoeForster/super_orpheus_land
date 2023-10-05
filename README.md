@@ -1,12 +1,14 @@
-# World Digger
+# Super Orpheus Land
 
-WIP!
+WIP - working title!
 
-This is a very WIP digging/platformer/stealth game project for the Ubisoft Reflections Autumn Jam 2023
+This is a very unfinished platformer game project for the Ubisoft Reflections and Leamington Autumn Jam 2023
+
+Basic premise: you're Orpheus, and you're heading into the Underworld to retrieve your dead wife Eurydice. You're not much of a fighter, but you're good at playing soothing music with the Lyre. See how far you can get...
 
 # Attributions
 
-NOT FINAL, need to complete when final game done, sorry if I've missed something!
+Sorry if I've missed something that's actually in the game - please let me know!
 
 "Seikilos Epitaph with the Lyre of Apollo" by Lina Palera is licenced under a Attribution-NonCommercial-ShareAlike 3.0 International License. https://freemusicarchive.org/music/The_Music_of_Ancient_Greece/An_Appreciation/01_Seikilos_Epitaph_with_the_Lyre_of_Apollo/
 
