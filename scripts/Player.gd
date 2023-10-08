@@ -269,7 +269,7 @@ func _process(delta):
 
 func try_pickup_item(score_to_add : int, equip_to_add : PlayerState.EQUIP_TYPE):
 	if _is_alive():
-		score += score
+		score += score_to_add
 		if not inventory.has(equip_to_add):
 			equipped_index = inventory.size()
 			inventory.push_back(equip_to_add)
