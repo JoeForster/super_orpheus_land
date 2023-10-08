@@ -261,6 +261,11 @@ func _process(delta):
 		if hint_timer <= 0:
 			hint_timer = 0
 			hint_label.hide()
+			
+	if Input.is_action_just_released("restart"):
+		reset_world()
+	elif Input.is_action_just_released("quit"):
+		get_tree().quit()
 
 func try_pickup_item(score_to_add : int, equip_to_add : PlayerState.EQUIP_TYPE):
 	if _is_alive():
